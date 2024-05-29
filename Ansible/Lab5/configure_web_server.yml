@@ -1,0 +1,92 @@
+---
+- name: Configure a web server
+  hosts: web
+  become: true
+  vars:
+    web_server_package: apache2
+    web_root: /var/www/html
+    firewall_allowed_ports:
+      - 80
+      - 443
+    sample_website_content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Welcome to Ansible Web Server</title>
+      </head>
+      <body>
+          <h1>Success! The Ansible Web Server is working!</h1>
+      </body>
+      </html>
+
+  tasks:
+    - name: Ensure Apache is installed
+      apt:
+        name: "{{ web_server_package }}"
+        state: present
+        update_cache: yes
+
+    - name: Ensure Apache is started and enabled
+      service:
+        name: "{{ web_server_package }}"
+        state: started
+        enabled: yes
+
+    - name: Deploy sample website
+      copy:
+        dest: "{{ web_root }}/index.html"
+        content: "{{ sample_website_content }}"
+
+    - name: Configure UFW to allow HTTP and HTTPS traffic
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop: "{{ firewall_allowed_ports }}"
+
+    - name: Ensure UFW is enabled
+      ufw:
+        state: enabled
+
+    - name: Remove default Apache welcome page (if exists)
+      file:
+        path: "{{ web_root }}/index.html"
+        state: absent
+
+    - name: Deploy sample website
+      copy:
+        dest: "{{ web_root }}/index.html"
+        content: "{{ sample_website_content }}"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Enable Apache mod_rewrite module
+      apache2_module:
+        name: rewrite
+        state: present
+
+    - name: Ensure Apache is reloaded
+      service:
+        name: "{{ web_server_package }}"
+        state: reloaded
+
+    - name: Harden Apache security settings
+      blockinfile:
+        path: /etc/apache2/conf-available/security.conf
+        create: yes
+        block: |
+          ServerTokens Prod
+          ServerSignature Off
+          TraceEnable Off
+
+    - name: Enable security.conf
+      file:
+        src: /etc/apache2/conf-available/security.conf
+        dest: /etc/apache2/conf-enabled/security.conf
+        state: link
+
+    - name: Restart Apache to apply security settings
+      service:
+        name: "{{ web_server_package }}"
+        state: restarted
