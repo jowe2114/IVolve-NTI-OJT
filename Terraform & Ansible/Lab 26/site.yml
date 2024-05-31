@@ -1,0 +1,39 @@
+---
+- name: Test AWS EC2 Dynamic Inventory
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+   
+    - name: Install Apache on all instances
+      become: yes
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Start Apache service
+      become: yes
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+        
+    - name: Ensure Apache is installed
+      apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure Apache service is running and enabled
+      service:
+        name: apache2
+        state: started
+        enabled: true
+      when: ansible_os_family == "Debian"
+
+    - name: Check Apache version
+      shell: apache2 -v
+      register: apache_version
+      changed_when: false
+      when: ansible_os_family == "Debian"
