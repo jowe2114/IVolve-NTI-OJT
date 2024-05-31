@@ -1,0 +1,10 @@
+---
+- name: Configure and setup Jenkins, Docker, and OpenShift CLI on Ubuntu
+  hosts: tag_Name_your_tag_name # Replace with the appropriate tag or group name
+  become: true
+
+  roles:
+    - role: docker
+    - role: openshift_cli
+    - role: jenkins
+

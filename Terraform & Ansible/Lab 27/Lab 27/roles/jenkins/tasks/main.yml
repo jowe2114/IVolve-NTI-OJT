@@ -1,0 +1,18 @@
+---
+- name: Add Jenkins repository key
+  shell: |
+    curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+
+- name: Add Jenkins repository
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] http://pkg.jenkins.io/debian-stable binary/'
+    state: present
+    update_cache: yes
+
+- name: Install Jenkins
+  apt:
+    name: jenkins
+    state: present
+
+
+
