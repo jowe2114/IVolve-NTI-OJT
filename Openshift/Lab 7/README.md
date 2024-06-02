@@ -51,7 +51,4 @@ kubectl rollout undo deployment/nginx-deployment --to-revision=1
 # Monitor Pod Status to Confirm Successful Rollback:
 kubectl get pods -w
 
-<img width="682" alt="Scre<img width="682" alt="Screenshot 2024-06-02 at 11 16 57" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/97bb6e08-a2d2-4326-800d-0775e89051ac">
-enshot 2024-06-02 at 11 22 30" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/3233c63c-094a-4168-9ed3-67b4594bbbfe">
-
-<img width="682" alt="Screenshot 2024-06-02 at 12 14 38" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/b9c63aa6-83bd-4a1e-ac08-ef093f8eb86c">
+<img width="682" alt="Screenshot 2024-06-02 at 11 17 09" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/6747fafd-4c98-4952-96ce-ae76212a5b1d">
