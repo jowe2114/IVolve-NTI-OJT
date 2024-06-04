@@ -1,0 +1,57 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: jenkins-deployment
+spec:
+  replicas: 1
+  selector:
+    app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      initContainers:
+      - name: init-sleep
+        image: busybox
+        command: ["sh", "-c", "sleep 10"]
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - jenkins
+      from:
+        kind: ImageStreamTag
+        name: jenkins:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+spec:
+  type: NodePort
+  selector:
+    app: jenkins
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30000
