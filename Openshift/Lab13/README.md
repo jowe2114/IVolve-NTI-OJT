@@ -10,5 +10,5 @@ Liveness Probe: Checks if Jenkins is still running by accessing the /login endpo
 # Create the `service file abd apply it:
 oc apply -f jenkins_service.yml
 
-Show the Deployment and services and the NodePort:
+# Show the Deployment and services and the NodePort:
 <img width="842" alt="Screenshot 2024-06-05 at 00 04 21" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/2a5779fb-cd50-43a9-8f8c-3cdf584acbb4">
