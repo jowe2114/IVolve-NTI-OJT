@@ -1,0 +1,1 @@
+# Objective: Use Helm Chart to deploy and manage applications in an OpenShift cluster. Explore Helm charts for common services. Greate a new He m chart for Neinx. Den ov the Helm chart and verify the denlovment. Access the Nginx server. Delete nginx release.
