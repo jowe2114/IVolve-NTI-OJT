@@ -21,7 +21,6 @@ pipeline {
         stage('build') {
             steps {
                script{
-                    sh '   chmod +x gradlew  '
                     sh '  ./gradlew build '
                 
                }
@@ -31,7 +30,6 @@ pipeline {
         stage('test') {
             steps {
                script{
-                    sh '  chmod +x gradlew  '
                     sh '  ./gradlew test '
                 
                }
