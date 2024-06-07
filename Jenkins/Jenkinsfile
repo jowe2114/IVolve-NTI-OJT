@@ -18,15 +18,33 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'chmod +x gradlew'
-                sh './gradlew build'
+                script {
+                    // Print current directory and list files
+                    sh 'echo "Current directory: $(pwd)"'
+                    sh 'ls -l'
+
+                    // Ensure gradlew exists and make it executable
+                    if (fileExists('gradlew')) {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew build'
+                    } else {
+                        error 'gradlew script not found!'
+                    }
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'chmod +x gradlew'
-                sh './gradlew test'
+                script {
+                    // Ensure gradlew exists and make it executable
+                    if (fileExists('gradlew')) {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew test'
+                    } else {
+                        error 'gradlew script not found!'
+                    }
+                }
             }
         }
 
