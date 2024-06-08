@@ -19,7 +19,7 @@ pipeline {
 
         stage(OpenshiftDeployment){
             steps{
-                                openshiftDeployment("asemmohamed321/newlab")
+                                openshiftDeployment("omaryousef/newlab")
             }
         }
     }
