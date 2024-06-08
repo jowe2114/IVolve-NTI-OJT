@@ -1,67 +1,64 @@
 @Library('Jowe-shared-library') _
-agent {
-        label 'slave1'
-    }
 pipeline {
-    environment {
-        imageName = 'jowe2114/ivolve-jenkins-app'
-    }
-
     agent any
-
-    stages {
-        stage('Verify Branch') {
-            steps {
-                echo "$GIT_BRANCH"
-            }
-        }
-
-
-        stage('build') {
-            steps {
-               script{
-                    sh '   chmod +x gradlew  '
-                    sh '  ./gradlew build '
-                
-               }
-            }
-        }
-
-        stage('test') {
-            steps {
-               script{
-                    sh '  chmod +x gradlew  '
-                    sh '  ./gradlew test '
-                
-               }
-            }
-        }
-
-
-
-
-
-        
-        stage('Build and Push Docker Image') {
+    
+    environment {
+        dockerHubCredentialsID	            = 'DockerHub'  		    			      // DockerHub credentials ID.
+        imageName   		            = 'jowe2114/oc-python-app'     			// DockerHub repo/image name.
+	openshiftCredentialsID	            = 'openshift'	    				// KubeConfig credentials ID.   
+	nameSpace                           = 'omaryousef'
+	clusterUrl                          = 'https://api.ocp-training.ivolve-test.com:6443'    
+    }
+    
+          
+stages {       
+       
+        stage('Build Docker image from Dockerfile in GitHub') {
             steps {
                 script {
-                    buildPushtoHub([ image: "${imageName}:${BUILD_NUMBER}", DockerCredentials: 'DOCKERHUB' ])
-                } 
+                 	
+                 		buildDockerImage("${imageName}")
+                      
+                }
             }
         }
-                stage('kubernetes') {
+        stage('Push image to Docker hub') {
             steps {
-               withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: '4', namespace: 'omaryousef', serverUrl: 'https://api.ocp-training.ivolve-test.com:6443']]) {    
-                 sh 'kubectl apply -f DeplymentAndSvc.yml -n omaryousef'
-                 
-            }
+                script {
+                 	
+                 		pushDockerImage("${dockerHubCredentialsID}", "${imageName}")
+                      
+                }
             }
         }
 
+        stage('Edit new image in deployment.yml file') {
+            steps {
+                script { 
+                	dir('oc') {
+				        editNewImage("${imageName}")
+			}
+                }
+            }
+        }
+	stage('Deploy on OpenShift Cluster') {
+	     steps {
+	         script { 
+			dir('oc') {
+	                        
+					deployOnOc("${openshiftCredentialsID}", "${nameSpace}", "${clusterUrl}")
+				}
+	                }
+	            }
+	        }
+    }
 
-
-
-
-
+    post {
+        success {
+            echo "${JOB_NAME}-${BUILD_NUMBER} pipeline succeeded"
+        }
+        failure {
+            echo "${JOB_NAME}-${BUILD_NUMBER} pipeline failed"
+        }
     }
 }
