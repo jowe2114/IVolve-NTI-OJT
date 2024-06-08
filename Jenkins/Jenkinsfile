@@ -11,9 +11,13 @@ pipeline {
             }
         }
 
-        stage(Dockerpush){
-            steps{
-                                pushDockerImage("ivolveimg")
+        stage('Push image to Docker hub') {
+            steps {
+                script {
+                 	
+                 		pushDockerImage("${dockerHubCredentialsID}", "${imageName}")
+                      
+                }
             }
         }
 
