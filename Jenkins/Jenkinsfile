@@ -1,21 +1,67 @@
 @Library('Jowe-shared-library') _
-pipeline {
-    agent {
+agent {
         label 'slave'
-        
     }
-    stages{
-        stage (DockerBuild){
-        steps{
-                                 buildDockerImage("ivolveimg")  
+pipeline {
+    environment {
+        imageName = 'jowe2114/ivolve-jenkins-app'
+    }
+
+    agent any
+
+    stages {
+        stage('Verify Branch') {
+            steps {
+                echo "$GIT_BRANCH"
             }
         }
 
-        stage(OpenshiftDeployment){
-            steps{
-                                openshiftDeployment("omaryousef/ivolveimg")
+
+        stage('build') {
+            steps {
+               script{
+                    sh '   chmod +x gradlew  '
+                    sh '  ./gradlew build '
+                
+               }
             }
         }
+
+        stage('test') {
+            steps {
+               script{
+                    sh '  chmod +x gradlew  '
+                    sh '  ./gradlew test '
+                
+               }
+            }
+        }
+
+
+
+
+
+        
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    buildPushtoHub([ image: "${imageName}:${BUILD_NUMBER}", DockerCredentials: 'DOCKERHUB' ])
+                } 
+            }
+        }
+                stage('kubernetes') {
+            steps {
+               withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: '4', namespace: 'omaryousef', serverUrl: 'https://api.ocp-training.ivolve-test.com:6443']]) {    
+                 sh 'kubectl apply -f DeplymentAndSvc.yml -n omaryousef'
+                 
+            }
+            }
+        }
+
+
+
+
+
+
     }
-    
 }
