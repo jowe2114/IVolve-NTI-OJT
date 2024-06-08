@@ -33,3 +33,13 @@ oc expose svc/my-html-app
 oc get route my-html-app
 
 <img width="736" alt="Screenshot 2024-06-08 at 14 36 08" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/5246f663-e02e-4485-b8a7-6377260f1d52">
+
+<img width="1392" alt="Screenshot 2024-06-08 at 14 39 44" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/7fc9556d-d096-4673-87bc-5ae9eab8d7a9">
+
+# Using GUI:
+
+<img width="1440" alt="Screenshot 2024-06-08 at 15 03 13" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/65bdee85-249d-41a9-995f-1580d393052b">
+
+<img width="1440" alt="Screenshot 2024-06-08 at 15 05 16" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/e23a3fd9-4c71-40f7-be76-ab75e8f62eba">
+
+<img width="1440" alt="Screenshot 2024-06-08 at 15 05 33" src="https://github.com/jowe2114/IVolve-NTI-OJT/assets/126627967/b8383ab6-712d-4f9c-b96c-0aed8b5fba63">
