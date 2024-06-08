@@ -1,13 +1,14 @@
 @Library('Jowe-shared-library') _
 
-pipeline {
-    agent {
-        label 'slave'
+agent {
+        label 'slave1'
     }
-
+pipeline {
     environment {
         imageName = 'jowe2114/ivolve-jenkins-app'
     }
+
+    agent any
 
     stages {
         stage('Verify Branch') {
@@ -16,71 +17,52 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                script {
-                    // Print current directory and list files
-                    sh 'echo "Current directory: $(pwd)"'
-                    sh 'ls -l'
 
-                    // Ensure gradlew exists and make it executable
-                    if (fileExists('gradlew')) {
-                        sh 'chmod +x gradlew'
-                        sh './gradlew build'
-                    } else {
-                        error 'gradlew script not found!'
-                    }
-                }
+        stage('build') {
+            steps {
+               script{
+                    sh '   chmod +x gradlew  '
+                    sh '  ./gradlew build '
+                
+               }
             }
         }
 
-        stage('Test') {
+        stage('test') {
             steps {
-                script {
-                    // Ensure gradlew exists and make it executable
-                    if (fileExists('gradlew')) {
-                        sh 'chmod +x gradlew'
-                        sh './gradlew test'
-                    } else {
-                        error 'gradlew script not found!'
-                    }
-                }
+               script{
+                    sh '  chmod +x gradlew  '
+                    sh '  ./gradlew test '
+                
+               }
             }
         }
 
+
+
+
+
+        
         stage('Build and Push Docker Image') {
             steps {
                 script {
                     buildPushtoHub([ image: "${imageName}:${BUILD_NUMBER}", DockerCredentials: 'DOCKERHUB' ])
-                }
+                } 
             }
         }
-
-        stage('Deploy to Kubernetes') {
+                stage('kubernetes') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[
-                    caCertificate: '', 
-                    clusterName: '', 
-                    contextName: '', 
-                    credentialsId: '4', 
-                    namespace: 'omaryousef', 
-                    serverUrl: 'https://api.ocp-training.ivolve-test.com:6443'
-                ]]) {
-                    sh 'kubectl apply -f DeplymentAndSvc.yml -n omaryousef'
-                }
+               withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: '4', namespace: 'omaryousef', serverUrl: 'https://api.ocp-training.ivolve-test.com:6443']]) {    
+                 sh 'kubectl apply -f DeplymentAndSvc.yml -n omaryousef'
+                 
+            }
             }
         }
-    }
 
-    post {
-        always {
-            echo 'This will run after every build, regardless of the build status'
-        }
-        success {
-            echo 'This will run only if the build succeeds'
-        }
-        failure {
-            echo 'This will run only if the build fails'
-        }
+
+
+
+
+
     }
 }
